@@ -105,3 +105,15 @@ pip install gradio
 ### Additional Notes
 - Update Gradio interface as needed.
 - Ensure access to the Hugging Face hosted models.
+
+### Chatbot Interactions
+
+Here are some screenshots of the chatbot in action:
+
+![Chatbot Interaction Summarizer](/chatbot_interaction_images/summarizer)
+
+![Chatbot Interaction Question1](/chatbot_interaction_images/question1)
+
+![Chatbot Interaction Question2](/chatbot_interaction_images/question2)
+
+...
