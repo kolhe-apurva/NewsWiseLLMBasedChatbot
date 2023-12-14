@@ -34,3 +34,6 @@ Again, ensure the file path in the script is correctly set to your test dataset 
 - Ensure that Python and Pandas are installed in your environment to run these scripts.
 - Modify the file paths in the scripts as per your directory structure.
 - These preprocessing steps are essential for the effective training and testing of the QA Llama 2 model.
+
+## References for dataset
+https://huggingface.co/datasets/newsqa
