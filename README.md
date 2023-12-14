@@ -110,10 +110,17 @@ pip install gradio
 
 Here are some screenshots of the chatbot in action:
 
-![Chatbot Interaction Summarizer](/chatbot_interaction_images/summarizer)
+**Chatbot Summarizing A Given News Article**
+![Chatbot Interaction Summarizer](/chatbot_interaction_images/summarizer)  
+
+<br>
+<br>
+
+**Chatbot Generating Answers To The Given Questions, Based On The Previous Article**
+
+<br>
+<br>
 
 ![Chatbot Interaction Question1](/chatbot_interaction_images/question1)
 
 ![Chatbot Interaction Question2](/chatbot_interaction_images/question2)
-
-...
