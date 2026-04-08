@@ -1,126 +1,121 @@
-# NewsWiseLLMBasedChatbot
-### A Collaborative Project by Apurva Kolhe & Vishrutha Reddy
+# NEWS-WISE
 
-## Overview
-The NewsWiseLLMBasedChatbot is an innovative amalgamation of two advanced models: the T5 Summarization Model and the Llama 2 Model. Crafted by Apurva Kolhe and Vishrutha Reddy, this sophisticated chatbot excels in summarizing news articles and providing insightful answers to queries based on those summaries. The project unfolds in three distinct yet interconnected phases: the training and evaluation of the T5 Summarization Model, the fine-tuning and assessment of the Llama 2 Model, and their eventual convergence into an integrated, multifunctional chatbot.
+End-to-end news chatbot combining a fine-tuned T5 summarizer and a QLoRA fine-tuned Llama 2 7B for context-aware Q&A, served through a Gradio UI.
 
-## Part 1: T5 Summarization Model
-
-### Overview
-The T5 Summarization Model is designed to summarize news articles using the "cnn_dailymail" dataset. The process includes data preprocessing, model training, and evaluation.
-
-### Installation
-```
-pip install transformers==4.20.0
-pip install keras_nlp==0.3.0
-pip install datasets
-pip install huggingface-hub
-pip install nltk
-```
-
-### Usage
-- Data Loading and Preprocessing: Load and preprocess the CNN/DailyMail dataset.
-- Model Setup: Initialize and configure the T5 small model using Hugging Face Transformers.
-- Training: Train the model on the processed dataset.
-- Evaluation: Evaluate the model's performance using the Rouge-L metric.
-  
-### Code Structure
-- **Dependency Installation**: Importing necessary libraries and modules.
-- **Data Loading**: Using the 'datasets' library to load the 'cnn_dailymail' dataset.
-- **Data Preprocessing**: Tokenization and splitting of the dataset.
-- **Model Initialization**: Setting up the T5 small model.
-- **Model Training**: Training the model on the processed dataset.
-- **Model Evaluation**: Evaluating the model using the Rouge-L metric.
-
-### Additional Notes
-- The project uses specific versions of libraries, so ensure compatibility by installing the specified versions.
-- Adjustments might be necessary depending on the computing resources available.
+![Python](https://img.shields.io/badge/Python-3.10-blue) ![HuggingFace](https://img.shields.io/badge/HuggingFace-Models-yellow) ![PyTorch](https://img.shields.io/badge/PyTorch-2.0-orange) ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange) ![Gradio](https://img.shields.io/badge/Gradio-UI-green)
 
 ---
 
-## Part 2: Fine-Tuning - Llama 2 7B Model
+## Demo
 
-### Overview
-The Llama 2 Model is trained to answer questions based on news articles, using a dataset from Hugging Face. Post-training, the model is uploaded to Hugging Face for evaluation and integration into the chatbot.
+**Summarizing a news article**
 
-### Installation
-```
-pip install autotrain-advanced
-pip install huggingface_hub
-# Additional dependencies for updating torch on Google Colab and others as required
-```
+![Summarizer](chatbot_interaction_images/summarizer.png)
 
-### Process
-1. **Model Training**: Train the Llama 2 Model using the `autotrain` utility from Hugging Face.
-2. **Model Upload**: Upload the trained model to Hugging Face.
+**Answering questions based on the article**
 
-### Usage
-- **Data Preparation**: Using a custom dataset for news question-answering from Hugging Face (Follow the README.md in the Dataset folder)
-- **Training Configuration**: Setting up training parameters such as learning rate, batch size, and number of epochs.
-- **Model Initialization and Training**: Using the `autotrain` utility for streamlined training and setup.
-- **Post-Training Actions**: Uploading the trained model to Hugging Face.
-
-### Evaluation
-- Model Loading: Load the trained Llama 2 Model from Hugging Face.
-- Data Loading: Prepare the evaluation data.
-- Evaluation Metrics: Evaluate the model using BLEU score, ROUGE, and semantic similarity.
-
-### Usage
-- **Model Evaluation Setup**: Configuring the model for evaluation.
-- **Performance Measurement**: Using different metrics to assess the model's performance on the test dataset.
-- **Result Analysis**: Analyzing and visualizing the results obtained from the evaluation metrics.
-
-## Additional Notes
-- Ensure compatibility by installing the specified versions of the libraries.
-- Adjust the training and evaluation parameters based on your specific requirements and the computing resources available.
+![Question 1](chatbot_interaction_images/question1.png)
+![Question 2](chatbot_interaction_images/question2.png)
 
 ---
 
-## Part 3: Combined T5 and Llama Models into a Chatbot - NEWS-WISE
+## How it works
 
-### Overview
-This section integrates the T5 Summarization and Llama 2 Models into a Gradio-based chatbot.
+1. Paste a news article into the chatbot
+2. T5 generates a summary
+3. Ask questions — Llama 2 answers them using the full article as context
+4. Ask follow-up questions or input a new article to start over
 
-### Installation
+---
+
+## Models
+
+| Model | Task | Trained on | Link |
+|---|---|---|---|
+| T5-small | Summarization | CNN/DailyMail (300K articles) | [ApurvaKolhe/text_summarization_t5](https://huggingface.co/ApurvaKolhe/text_summarization_t5) |
+| Llama 2 7B | Question Answering | NewsQA by Microsoft Research (2,500 pairs) | [ApurvaKolhe/newsQA](https://huggingface.co/ApurvaKolhe/newsQA) |
+
+---
+
+## Results
+
+**T5 Summarizer**
+
+| | Before fine-tuning | After fine-tuning |
+|---|---|---|
+| Accuracy | 37.6% | 67.64% |
+| Loss | 8.90 | 4.90 |
+
+**Llama 2 Q&A** (evaluated on 101 test samples)
+
+| Metric | Score |
+|---|---|
+| ROUGE-1 | 0.495 |
+| ROUGE-2 | 0.262 |
+| ROUGE-L | 0.489 |
+| BLEU | 0.129 |
+| BERT Cosine Similarity | 0.598 |
+
+The BLEU score is low by design — the model paraphrases answers rather than copying the reference text word for word. The cosine similarity (0.598) is the more meaningful metric here, showing the answers are semantically aligned with the expected ones.
+
+---
+
+## Training setup
+
+**T5** — fine-tuned using TensorFlow on a 300 article subset of CNN/DailyMail. Learning rate 2e-5, batch size 16. Evaluated using RougeL.
+
+**Llama 2** — fine-tuned using QLoRA (4-bit quantization) via HuggingFace AutoTrain on Google Colab A100. Trained on 2,500 NewsQA pairs for 1 epoch. LoRA applied to `q_proj` and `v_proj` with rank 16.
+
+---
+
+## Running the chatbot
+
+Open [Final_Chatbot.ipynb](Final_Chatbot.ipynb) in Google Colab and run cells top to bottom. Models load from HuggingFace automatically — no manual downloads needed.
+
 ```
-pip install autotrain-advanced
-pip install huggingface_hub
-pip install gradio
+Runtime: GPU (T4 or better)
 ```
 
-### Process
-1. **Model Loading**: Load both the T5 Summarization Model and the Llama 2 Model from Hugging Face.
-2. **Gradio Interface**: Set up a Gradio interface for the chatbot.
-3. **Chatbot Functionality**: Enable the chatbot to summarize news articles (T5 Model) and answer questions (Llama 2 Model).
+> Llama 2 7B requires a GPU. CPU inference is not practical.
 
-### Usage
-- Users input a news article to get a summary and ask questions related to the summary.
-- The Gradio interface facilitates interaction with the chatbot.
+---
 
-### Code Structure
-- **Model Initialization**: Loading the T5 summarization model and the Llama2 question-answering model.
-- **Gradio Interface Setup**: Configuring the Gradio interface for user interaction.
-- **Summarization and Question Answering**: Integrating both models to provide a seamless chatbot experience.
+## Replicating the training
 
-### Additional Notes
-- Update Gradio interface as needed.
-- Ensure access to the Hugging Face hosted models.
+### T5 Summarizer
+Open [T5_Summarization_Model_Evaluation.ipynb](T5_Summarization_Model_Evaluation.ipynb) in Colab.
 
-### Chatbot Interactions
+```bash
+pip install transformers==4.20.0 datasets huggingface-hub nltk rouge-score
+```
 
-Here are some screenshots of the chatbot in action:
+Dataset loads automatically via HuggingFace `datasets` library (CNN/DailyMail).
 
-**Chatbot Summarizing A Given News Article**
-![Chatbot Interaction Summarizer](/chatbot_interaction_images/summarizer)  
+### Llama 2 Q&A
 
-<br>
-<br>
+Dataset preparation (run locally):
+```bash
+pip install pandas
+python Dataset_For_QA_Chatbot/generate_data.py   # formats NewsQA into instruction prompts
+python Dataset_For_QA_Chatbot/clean_text.py       # removes Penn Treebank artifacts
+python Dataset_For_QA_Chatbot/trim_test_101.py    # strips answers from test split
+```
 
-**Chatbot Generating Answers To The Given Questions, Based On The Previous Article**
+Then open [Llama2_Model.ipynb](Llama2_Model.ipynb) in Colab for fine-tuning via AutoTrain:
+```bash
+pip install autotrain-advanced huggingface_hub
+```
 
-<br>
-<br>
+Upload your prepared dataset to HuggingFace and follow the AutoTrain setup in the notebook.
 
-![Chatbot Interaction Question1](/chatbot_interaction_images/question1)
+---
 
-![Chatbot Interaction Question2](/chatbot_interaction_images/question2)
+## Limitations
+
+- Only 2,500 training samples were used due to compute constraints — a larger dataset would improve Q&A accuracy
+- Articles longer than 512 tokens are chunked, so very long articles may lose some context between chunks
+- Answers vary for the same question since the model is generative — this is expected, not a bug
+- No memory between sessions — each new article starts fresh
+- Single-user only — the chatbot state is not thread-safe for concurrent users
+
+---
